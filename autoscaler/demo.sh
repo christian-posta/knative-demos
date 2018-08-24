@@ -33,7 +33,7 @@ run "curl -H \"Host: ${HOST_URL}\" \"http://${IP_ADDRESS}?sleep=100&prime=100000
 
 
 tmux split-window -v -d -c ~/go/src/github.com/knative/docs/
-tmux select-pane -t 1
+tmux select-pane -t 0
 tmux send-keys -t 1 "go run serving/samples/autoscale-go/test/test.go -sleep 100 -prime 1000000 -bloat 50 -qps 9999 -concurrency 10 --ip $IP_ADDRESS" C-m
 read -s 
 
