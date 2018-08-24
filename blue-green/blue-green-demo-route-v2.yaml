@@ -1,0 +1,13 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Route
+metadata:
+  name: blue-green-demo # Updating our existing route
+  namespace: default
+spec:
+  traffic:
+  - revisionName: blue-green-demo-00001
+    percent: 0
+    name: v1 # Adding a new named route for v1
+  - revisionName: blue-green-demo-00002
+    percent: 100
+    # Named route for v2 has been removed, since we don't need it anymore

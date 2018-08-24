@@ -1,0 +1,12 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Route
+metadata:
+  name: blue-green-demo # Updating our existing route
+  namespace: default
+spec:
+  traffic:
+  - revisionName: blue-green-demo-00001
+    percent: 50 # Updating the percentage from 100 to 50
+  - revisionName: blue-green-demo-00002
+    percent: 50 # Updating the percentage from 0 to 50
+    name: v2
