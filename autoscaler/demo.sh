@@ -9,7 +9,7 @@ run "cat $(relative service.yaml)"
 
 backtotop
 
-IP_ADDRESS=$(kubectl get svc knative-ingressgateway -n istio-system -o 'jsonpath={.status.loadBalancer.ingress[0].ip}')
+IP_ADDRESS=$(k get pod -n gloo-system -l  gloo=clusteringress-proxy -o jsonpath='{.items[0].status.hostIP}'):$(kubectl -n gloo-system get service clusteringress-proxy -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}')
 
 # echo "IP: $IP_ADDRESS"
 # read -s
@@ -34,14 +34,19 @@ run "curl -H \"Host: ${HOST_URL}\" \"http://${IP_ADDRESS}?sleep=100&prime=100000
 
 tmux split-window -v -d -c ~/go/src/github.com/knative/docs/
 tmux select-pane -t 0
-tmux send-keys -t 1 "go run serving/samples/autoscale-go/test/test.go -sleep 100 -prime 1000000 -bloat 50 -qps 9999 -concurrency 10 --ip $IP_ADDRESS" C-m
+tmux send-keys -t 1 "hey -z 30s -c 50 \
+  -host \"autoscale-go.default.example.com\" \
+  \"http://${IP_ADDRESS?}?sleep=100&prime=10000&bloat=5\"" C-m
 read -s 
+
+
+ 
 
 kubectl port-forward -n monitoring $(kubectl get pods -n monitoring --selector=app=grafana --output=jsonpath="{.items..metadata.name}") 3000 > /dev/null 2>&1 &
 PID=$!
 
 desc "watch the load factor and autoscaling"
-run "kubectl get deploy --watch"
+run "kubectl get pod --watch"
 
 desc "end demo"
 read -s

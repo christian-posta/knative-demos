@@ -9,7 +9,7 @@ run "cat $(relative service.yaml)"
 
 backtotop
 
-IP_ADDRESS=$(kubectl get svc knative-ingressgateway -n istio-system -o 'jsonpath={.status.loadBalancer.ingress[0].ip}')
+IP_ADDRESS=$(k get pod -n gloo-system -l  gloo=clusteringress-proxy -o jsonpath='{.items[0].status.hostIP}'):$(kubectl -n gloo-system get service clusteringress-proxy -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}')
 
 # echo "IP: $IP_ADDRESS"
 # read -s
